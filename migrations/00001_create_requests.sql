@@ -1,5 +1,5 @@
 -- +goose Up
-create endpoints (
+create table endpoints (
     id uuid primary key default gen_random_uuid(),
     token_hash text not null unique,
     name text,
@@ -21,8 +21,7 @@ create table requests (
     received_at timestamptz not null default now()
 );
 
-create index requests_endpoint_received_idx (endpoint_id, received_at desc)
-on table requests;
+create index requests_endpoint_received_idx on requests(endpoint_id, received_at desc);
 
 -- +goose Down
 drop table if exists endpoints;
