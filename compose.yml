@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    depends_on:
+      - db
+  db:
+    image: postgres:18
+    
+secrets:
+  db_url:
+    environment: DATABASE_URL
+  db_username:
+    environment: DATABASE_USERNAME
+  db_password:
+    environment: DATABASE_PASSWORD
