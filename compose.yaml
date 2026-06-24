@@ -2,16 +2,16 @@ services:
   app:
     build: .
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/postgres?sslmode=disable"
   db:
     image: postgres:18
     environment:
       POSTGRES_PASSWORD: postgres
-
-secrets:
-  db_url:
-    environment: DATABASE_URL
-  db_username:
-    environment: DATABASE_USERNAME
-  db_password:
-    environment: DATABASE_PASSWORD
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
