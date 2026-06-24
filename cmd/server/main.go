@@ -4,6 +4,8 @@ import (
 	"context"
 	"log"
 	"os"
+	"net/http"
+	"io"
 
 	"snyff/migrations"
 
@@ -40,5 +42,15 @@ func main() {
 	// Perform db migrations using goose
 	if err := goose.Up(db, "."); err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
+	}
+
+	// Start the server
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		io.WriteString(w, "Hello, world!\n")
+		w.WriteHeader(http.StatusOK)
+	})
+	
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
 	}
 }
