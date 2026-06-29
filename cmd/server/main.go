@@ -49,6 +49,10 @@ func main() {
 		io.WriteString(w, "Hello, world!\n")
 		w.WriteHeader(http.StatusOK)
 	})
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
 	
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
