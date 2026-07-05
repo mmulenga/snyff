@@ -8,6 +8,7 @@ import (
 
 	"snyff/internal/store"
 	"snyff/internal/ingest"
+	"snyff/internal/api"
 	"snyff/migrations"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -46,11 +47,12 @@ func main() {
 	}
 
 	s := store.NewPostgresDBConnection(pool, &ctx)
-	i := ingest.NewIngestor(s)
-
+	ingestor := ingest.NewIngestor(s)
+	api := api.NewRouter(s)
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", i.IngestHandler)
+	mux.HandleFunc("/", ingestor.IngestHandler)
+	mux.HandleFunc("/healthz", api.HealthHandler)
 
 	// Start the server
 	if err := http.ListenAndServe(":8080", mux); err != nil {
