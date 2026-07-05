@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"log"
-	"os"
 	"net/http"
-	"io"
+	"os"
 
+	"snyff/internal/store"
+	"snyff/internal/ingest"
 	"snyff/migrations"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -44,17 +45,15 @@ func main() {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
-	// Start the server
-	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "Hello, world!\n")
-		w.WriteHeader(http.StatusOK)
-	})
+	s := store.NewPostgresDBConnection(pool, &ctx)
+	i := ingest.NewIngestor(s)
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
-	
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", i.IngestHandler)
+
+	// Start the server
+	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }

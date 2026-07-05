@@ -1,14 +1,14 @@
 -- +goose Up
 create table endpoints (
-    id uuid primary key default gen_random_uuid(),
+    id uuid primary key default uuidv7(),
     token_hash text not null unique,
     name text,
     created_at timestamptz not null default now()
 );
 
 create table requests (
-    id uuid primary key default gen_random_uuid(),
-    endpoint_id uuid not null references endpoints(id) on delete cascade,
+    id uuid primary key default uuidv7(),
+    --endpoint_id uuid not null references endpoints(id) on delete cascade,
     method text not null,
     path text not null,
     query text,
@@ -21,7 +21,7 @@ create table requests (
     received_at timestamptz not null default now()
 );
 
-create index requests_endpoint_received_idx on requests(endpoint_id, received_at desc);
+--create index requests_endpoint_received_idx on requests(endpoint_id, received_at desc);
 
 -- +goose Down
 drop table if exists endpoints;
