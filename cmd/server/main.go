@@ -46,9 +46,9 @@ func main() {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
-	s := store.NewPostgresDBConnection(pool, &ctx)
-	ingestor := ingest.NewIngestor(s)
-	api := api.NewRouter(s)
+	conn := store.NewPostgresDBConnection(pool, &ctx)
+	ingestor := ingest.NewIngester(conn)
+	api := api.NewRouter(conn)
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", ingestor.IngestHandler)

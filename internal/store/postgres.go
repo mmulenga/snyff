@@ -37,11 +37,12 @@ func (db *PostgresDBConnection) Save(r *Request) error {
 		r.Headers,
 		r.Body,
 		r.Body_size_bytes,
-		r.Body_truncrated,
+		r.Body_truncated,
 		r.Content_type,
 		r.Source_ip,
 		r.Received_at); err != nil {
 		return err
 	}
+	
 	return nil
 }

@@ -14,7 +14,7 @@ type Request struct {
     Headers map[string][]string
     Body []byte
     Body_size_bytes int
-    Body_truncrated bool
+    Body_truncated bool
     Content_type string
     Source_ip netip.Addr
     Received_at time.Time
