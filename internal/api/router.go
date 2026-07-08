@@ -22,7 +22,7 @@ func (r *Router) HealthHandler(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, "Status: OK!\n")
 }
 
-func (r *Router) RequestHandler(w http.ResponseWriter, req *http.Request) {
+func (r *Router) ListRequestHandler(w http.ResponseWriter, req *http.Request) {
 	query := req.URL.Query()
 
 	page, err := strconv.Atoi(query.Get("page"))
@@ -42,4 +42,16 @@ func (r *Router) RequestHandler(w http.ResponseWriter, req *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
     fmt.Fprintf(w, `{"page":%d,"limit":%d,"items":%v}`, page, limit, requests)
+}
+
+func (r *Router) FindRequestHandler(w http.ResponseWriter, req *http.Request) {
+	id := req.PathValue("id")
+
+	request, err := r.requestStore.FindById(id)
+	if err != nil {
+		log.Println(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, `%v`, *request)
 }

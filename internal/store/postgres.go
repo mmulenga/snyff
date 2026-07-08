@@ -49,9 +49,24 @@ func (db *PostgresDBConnection) Save(r *Request) error {
 }
 
 func (db *PostgresDBConnection) FindById(id string) (*Request, error) {
-	r := Request{}
+	request := Request{}
+	query := "select * from requests where id = $1"
+	result := db.pool.QueryRow(*db.ctx, query, id)
 
-	return &r, nil
+	result.Scan(
+		&request.Id, 
+		&request.Method, 
+		&request.Path, 
+		&request.Query, 
+		&request.Headers, 
+		&request.Body, 
+		&request.Body_size_bytes, 
+		&request.Body_truncated, 
+		&request.Content_type, 
+		&request.Source_ip, 
+		&request.Received_at)
+
+	return &request, nil
 }
 
 func (db *PostgresDBConnection) List(offset, limit int) ([] *Request, error) {
