@@ -53,6 +53,7 @@ func main() {
 
 	mux.HandleFunc("/", ingestor.IngestHandler)
 	mux.HandleFunc("/healthz", api.HealthHandler)
+	mux.HandleFunc("/requests", api.RequestHandler)
 
 	// Start the server
 	if err := http.ListenAndServe(":8080", mux); err != nil {

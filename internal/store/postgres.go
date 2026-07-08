@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -45,4 +46,40 @@ func (db *PostgresDBConnection) Save(r *Request) error {
 	}
 	
 	return nil
+}
+
+func (db *PostgresDBConnection) FindById(id string) (*Request, error) {
+	r := Request{}
+
+	return &r, nil
+}
+
+func (db *PostgresDBConnection) List(offset, limit int) ([] *Request, error) {
+	var requests []*Request
+	query := "select * from requests offset $1 limit $2"
+	results, err := db.pool.Query(*db.ctx, query, offset, limit)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for results.Next() {
+		request := Request{}
+
+		results.Scan(
+			&request.Id, 
+			&request.Method, 
+			&request.Path, 
+			&request.Query, 
+			&request.Headers, 
+			&request.Body, 
+			&request.Body_size_bytes, 
+			&request.Body_truncated, 
+			&request.Content_type, 
+			&request.Source_ip, 
+			&request.Received_at)
+			
+		requests = append(requests, &request)
+	}
+
+	return requests, nil
 }

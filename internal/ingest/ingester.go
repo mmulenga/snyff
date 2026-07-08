@@ -11,7 +11,7 @@ import (
 )
 
 type Ingester struct {
-	store store.RequestRepository
+	requestStore store.RequestRepository
 }
 
 func NewIngester(s store.RequestRepository) *Ingester {
@@ -61,7 +61,7 @@ func (i *Ingester) IngestHandler(w http.ResponseWriter, req *http.Request) {
 	request.Source_ip = addr.Addr()
 	request.Received_at = time.Now()
 
-	if err := i.store.Save(&request); err != nil {
+	if err := i.requestStore.Save(&request); err != nil {
 		log.Fatal(err)
 	}
 }
