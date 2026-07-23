@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
 
-	"snyff/internal/store"
-	"snyff/internal/ingest"
 	"snyff/internal/api"
+	"snyff/internal/ingest"
+	"snyff/internal/store"
 	"snyff/migrations"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -51,7 +52,14 @@ func main() {
 	api := api.NewRouter(conn)
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", ingestor.IngestHandler)
+	mux.HandleFunc("/", func (w http.ResponseWriter, r *http.Request) {
+		tmpl := template.Must(template.ParseFiles("web/templates/index.html"))
+
+		if err := tmpl.Execute(w, nil); err != nil {
+			log.Println(err)
+		}
+	})
+	mux.HandleFunc("/ingest", ingestor.IngestHandler)
 	mux.HandleFunc("/healthz", api.HealthHandler)
 	mux.HandleFunc("/requests", api.ListRequestHandler)
 	mux.HandleFunc("/requests/{id}", api.FindRequestHandler)
