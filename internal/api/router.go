@@ -1,6 +1,7 @@
 package api
 
 import (
+	//"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -41,7 +42,15 @@ func (r *Router) ListRequestHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-    fmt.Fprintf(w, `{"page":%d,"limit":%d,"items":%v}`, page, limit, requests)
+	// reqJSON, err := json.Marshal(requests)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+    fmt.Fprintf(w, `{"page":%d, "limit":%d, "items": `, page, limit)
+	for _, request := range *requests {
+		fmt.Fprintf(w, `%v`, request)
+		fmt.Fprintf(w, "}")
+	}
 }
 
 func (r *Router) FindRequestHandler(w http.ResponseWriter, req *http.Request) {
