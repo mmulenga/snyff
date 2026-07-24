@@ -7,21 +7,19 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-
-
 // func NewRequest() (r *Request) {
 //     return &Request{}
 // }
 
-// type Endpoint struct {
-// 	id string
-//     token_hash string
-//     name string
-//     created_at time.Time
-// }
+//	type Endpoint struct {
+//		id string
+//	    token_hash string
+//	    name string
+//	    created_at time.Time
+//	}
 type PostgresDBConnection struct {
 	pool *pgxpool.Pool
-	ctx *context.Context
+	ctx  *context.Context
 }
 
 func NewPostgresDBConnection(p *pgxpool.Pool, c *context.Context) *PostgresDBConnection {
@@ -44,7 +42,7 @@ func (db *PostgresDBConnection) Save(r *Request) error {
 		r.Received_at); err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -53,24 +51,26 @@ func (db *PostgresDBConnection) FindById(id string) (*Request, error) {
 	query := "select * from requests where id = $1"
 	result := db.pool.QueryRow(*db.ctx, query, id)
 
-	result.Scan(
-		&request.Id, 
-		&request.Method, 
-		&request.Path, 
-		&request.Query, 
-		&request.Headers, 
-		&request.Body, 
-		&request.Body_size_bytes, 
-		&request.Body_truncated, 
-		&request.Content_type, 
-		&request.Source_ip, 
-		&request.Received_at)
+	if err := result.Scan(
+		&request.Id,
+		&request.Method,
+		&request.Path,
+		&request.Query,
+		&request.Headers,
+		&request.Body,
+		&request.Body_size_bytes,
+		&request.Body_truncated,
+		&request.Content_type,
+		&request.Source_ip,
+		&request.Received_at); err != nil {
+		log.Println(err)
+	}
 
 	return &request, nil
 }
 
 func (db *PostgresDBConnection) List(offset, limit int) (*[]Request, error) {
-	requests := make([]Request, limit)
+	requests := make([]Request, 0)
 	query := "select * from requests offset $1 limit $2"
 	results, err := db.pool.Query(*db.ctx, query, offset, limit)
 	if err != nil {
@@ -80,19 +80,21 @@ func (db *PostgresDBConnection) List(offset, limit int) (*[]Request, error) {
 	for results.Next() {
 		request := new(Request)
 
-		results.Scan(
-			&request.Id, 
-			&request.Method, 
-			&request.Path, 
-			&request.Query, 
-			&request.Headers, 
-			&request.Body, 
-			&request.Body_size_bytes, 
-			&request.Body_truncated, 
-			&request.Content_type, 
-			&request.Source_ip, 
-			&request.Received_at)
-			
+		if err := results.Scan(
+			&request.Id,
+			&request.Method,
+			&request.Path,
+			&request.Query,
+			&request.Headers,
+			&request.Body,
+			&request.Body_size_bytes,
+			&request.Body_truncated,
+			&request.Content_type,
+			&request.Source_ip,
+			&request.Received_at); err != nil {
+			log.Println(err)
+		}
+
 		requests = append(requests, *request)
 	}
 

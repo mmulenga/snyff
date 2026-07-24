@@ -11,6 +11,7 @@ import (
 	"snyff/internal/ingest"
 	"snyff/internal/store"
 	"snyff/migrations"
+	"snyff/web"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
@@ -52,8 +53,9 @@ func main() {
 	api := api.NewRouter(conn)
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", func (w http.ResponseWriter, r *http.Request) {
-		tmpl := template.Must(template.ParseFiles("web/templates/index.html"))
+	mux.Handle("/static/", http.FileServer(http.FS(web.Content)))
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		tmpl := template.Must(template.ParseFS(web.Content, "templates/*.html"))
 
 		if err := tmpl.Execute(w, nil); err != nil {
 			log.Println(err)

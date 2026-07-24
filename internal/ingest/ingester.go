@@ -20,7 +20,7 @@ func NewIngester(s store.RequestRepository) *Ingester {
 
 func (i *Ingester) IngestHandler(w http.ResponseWriter, req *http.Request) {
 	request := store.Request{}
-	reader := http.MaxBytesReader(w, req.Body, 1024 * 1024)
+	reader := http.MaxBytesReader(w, req.Body, 1024*1024)
 	buffer := make([]byte, 8192) // 8KB buffer
 	body := make([]byte, 0)
 	bodySize := 0
@@ -33,13 +33,13 @@ func (i *Ingester) IngestHandler(w http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			if err == io.EOF {
 				break
-			} 
+			}
 			var e *http.MaxBytesError
-        	if errors.As(err, &e) {
+			if errors.As(err, &e) {
 				log.Println(err)
 				request.Body_truncated = true
 				break
-        	}
+			}
 			break
 		}
 	}
@@ -51,9 +51,9 @@ func (i *Ingester) IngestHandler(w http.ResponseWriter, req *http.Request) {
 		log.Println(err)
 	}
 
-	request.Method = req.Method
-	request.Path = req.URL.Path
-	request.Query = req.RequestURI
+	request.Method = &req.Method
+	request.Path = &req.URL.Path
+	request.Query = &req.RequestURI
 	request.Headers = req.Header
 	request.Body = body
 	request.Body_size_bytes = bodySize

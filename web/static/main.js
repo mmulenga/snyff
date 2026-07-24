@@ -1,3 +1,5 @@
+const tableBody = document.getElementById("table-body");
+
 async function getRequests() {
     const url = "http://localhost:8080/requests";
 
@@ -15,7 +17,6 @@ async function getRequests() {
 
 function populateTable() {
     try {
-        const tableBody = document.getElementById("table-body");
         const requests = getRequests();
         const requestData = JSON.parse(requests);
 
@@ -39,11 +40,9 @@ function populateTable() {
             tableBody.appendChild(row);
         });
     } catch(error) {
-        tableBody.innerHTML = `<tr><td colspan="3" style="color: red;">{error.errorMessage}</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="3" style="color: red;">${error}</td></tr>`;
     }
 
 }
 
-document.addEventListener("DOMContentLoaded", () => { 
-    populateTable();
-});
+populateTable();
