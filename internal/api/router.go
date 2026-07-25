@@ -46,7 +46,7 @@ func (r *Router) ListRequestHandler(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Fprintf(w, `{"page":%d, "limit":%d, "items": %v`, page, limit, reqJSON)
+	fmt.Fprintf(w, `{"page":%d, "limit":%d, "items": %v`, page, limit, string(reqJSON))
 }
 
 func (r *Router) FindRequestHandler(w http.ResponseWriter, req *http.Request) {

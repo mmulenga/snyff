@@ -6,18 +6,17 @@ import (
 )
 
 type Request struct {
-	Id string
-	//Endpoint_id string
-	Method          *string
-	Path            *string
-	Query           *string
-	Headers         map[string][]string
-	Body            []byte
-	Body_size_bytes int
-	Body_truncated  bool
-	Content_type    string
-	Source_ip       netip.Addr
-	Received_at     time.Time
+	Id              string              `json:"id"`
+	Method          *string             `json:"method"`
+	Path            *string             `json:"path"`
+	Query           *string             `json:"query"`
+	Headers         map[string][]string `json:"headers"`
+	Body            []byte              `json:"body"`
+	Body_size_bytes int                 `json:"body_size_bytes"`
+	Body_truncated  bool                `json:"body_truncated"`
+	Content_type    string              `json:"content_type"`
+	Source_ip       netip.Addr          `json:"source_ip"`
+	Received_at     time.Time           `json:"received_at"`
 }
 
 type Endpoint struct {
