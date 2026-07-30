@@ -28,7 +28,6 @@ SELECT
   query,
   headers::jsonb,
   convert_to(body_text, 'UTF8'),
-  -- claimed_size wins when set (row 5); otherwise fall back to actual stored bytes; 0 when no body
   coalesce(claimed_size, octet_length(convert_to(body_text, 'UTF8')), 0),
   truncated,
   content_type,
