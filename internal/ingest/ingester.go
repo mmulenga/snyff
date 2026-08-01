@@ -19,6 +19,13 @@ func NewIngester(s store.RequestRepository) *Ingester {
 }
 
 func (i *Ingester) IngestHandler(w http.ResponseWriter, req *http.Request) {
+	request := ingest(w, req)
+	if err := i.requestStore.Save(request); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func ingest(w http.ResponseWriter, req *http.Request) *store.Request {
 	request := store.Request{}
 	reader := http.MaxBytesReader(w, req.Body, 1024*1024)
 	buffer := make([]byte, 8192) // 8KB buffer
@@ -46,7 +53,6 @@ func (i *Ingester) IngestHandler(w http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
 
 	addr, err := netip.ParseAddrPort(req.RemoteAddr)
-
 	if err != nil {
 		log.Println(err)
 	}
@@ -61,7 +67,5 @@ func (i *Ingester) IngestHandler(w http.ResponseWriter, req *http.Request) {
 	request.Source_ip = addr.Addr()
 	request.Received_at = time.Now()
 
-	if err := i.requestStore.Save(&request); err != nil {
-		log.Fatal(err)
-	}
+	return &request
 }
