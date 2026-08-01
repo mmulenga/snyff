@@ -6,4 +6,6 @@ down:
 
 check:
 	sudo docker compose exec db psql -U postgres -d postgres -c "SELECT * FROM requests;"
-	
+
+lint:
+	$$(go env GOPATH)/bin/golangci-lint run

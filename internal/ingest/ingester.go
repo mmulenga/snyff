@@ -50,7 +50,11 @@ func ingest(w http.ResponseWriter, req *http.Request) *store.Request {
 			break
 		}
 	}
-	defer req.Body.Close()
+	defer func() {
+		if err := req.Body.Close(); err != nil {
+			log.Println(err)
+		}
+	}()
 
 	addr, err := netip.ParseAddrPort(req.RemoteAddr)
 	if err != nil {

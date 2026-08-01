@@ -20,7 +20,9 @@ func NewRouter(s store.RequestRepository) *Router {
 
 func (r *Router) HealthHandler(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, "Status: OK!\n")
+	if _, err := io.WriteString(w, "Status: OK!\n"); err != nil {
+		log.Println(err)
+	}
 }
 
 func (r *Router) ListRequestHandler(w http.ResponseWriter, req *http.Request) {
@@ -46,7 +48,9 @@ func (r *Router) ListRequestHandler(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Fprint(w, string(reqJSON))
+	if _, err := fmt.Fprint(w, string(reqJSON)); err != nil {
+		log.Println(err)
+	}
 }
 
 func (r *Router) FindRequestHandler(w http.ResponseWriter, req *http.Request) {
@@ -58,5 +62,7 @@ func (r *Router) FindRequestHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, `%v`, *request)
+	if _, err := fmt.Fprintf(w, `%v`, *request); err != nil {
+		log.Println(err)
+	}
 }
